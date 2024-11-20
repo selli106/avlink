@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream Countdown</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="countdown-container">
+        <h1>Live Stream Countdown</h1>
+        <div id="countdown"></div>
+        <button id="admin-button" onclick="showAdminPanel()">Set Target Time (Admin)</button>
+    </div>
+
+    <!-- Admin Panel (hidden initially) -->
+    <div id="admin-panel" class="hidden">
+        <h2>Admin: Set Target Time</h2>
+        <input type="datetime-local" id="target-time-input">
+        <button onclick="setTargetTime()">Set Target Time</button>
+        <button onclick="hideAdminPanel()">Cancel</button>
+    </div>
+
+    <div id="password-prompt" class="hidden">
+        <h2>Enter Admin Password</h2>
+        <input type="password" id="password-input">
+        <button onclick="verifyPassword()">Submit</button>
+        <button onclick="hidePasswordPrompt()">Cancel</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
