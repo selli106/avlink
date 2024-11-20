@@ -12,7 +12,6 @@
       color: white;
       padding: 20px;
     }
-
     .countdown-timer {
       font-size: 3rem;
       font-weight: bold;
@@ -21,7 +20,6 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
     }
-
     button {
       background-color: #007BFF;
       color: white;
@@ -32,14 +30,12 @@
       border-radius: 5px;
       margin-top: 20px;
     }
-
     button:hover {
       background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-
   <h1>Our Live Stream is Starting Soon!</h1>
   <p>Thank you for joining us. The stream will begin shortly. Stay tuned!</p>
 
@@ -50,21 +46,23 @@
   <button id="update-timer">Update Countdown</button>
 
   <script>
-    // Get the saved countdown time or set default to 1 hour from now
-    let countdownTime = localStorage.getItem('countdownTime') 
-      ? new Date(parseInt(localStorage.getItem('countdownTime'), 10))
-      : new Date(Date.now() + 3600000); // Default: 1 hour from now
+    // Persistent Countdown Time using localStorage
+    const savedTime = localStorage.getItem('countdownTime');
+    let countdownTime = savedTime ? new Date(parseInt(savedTime, 10)) : new Date(Date.now() + 3600000); // Default: 1 hour from now
 
-    // Save the countdown time in localStorage for persistence
-    localStorage.setItem('countdownTime', countdownTime.getTime());
+    // Save the initial countdown time if it's new
+    if (!savedTime) {
+      localStorage.setItem('countdownTime', countdownTime.getTime());
+    }
 
-    // Countdown timer function
+    // Function to update and display the countdown
     function updateCountdown() {
       const now = new Date();
       const diff = countdownTime - now;
 
       if (diff <= 0) {
         document.getElementById('countdown').textContent = "00:00:00";
+        clearInterval(timerInterval);
         return;
       }
 
@@ -75,8 +73,8 @@
       document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
     }
 
-    // Update the countdown every second
-    setInterval(updateCountdown, 1000);
+    // Start the countdown interval
+    const timerInterval = setInterval(updateCountdown, 1000);
     updateCountdown();
 
     // Admin button to update the timer
@@ -94,6 +92,5 @@
       }
     });
   </script>
-
 </body>
 </html>
