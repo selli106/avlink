@@ -9,88 +9,120 @@
       font-family: sans-serif;
       text-align: center;
       background: linear-gradient(to bottom, #7e0039, #9b0056);
-      color: white;
-      padding: 20px;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
     }
-    .countdown-timer {
+    .live-stream-countdown {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
       font-size: 3rem;
       font-weight: bold;
-      margin: 20px 0;
-      padding: 10px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+    #countdown {
+      font-size: 3rem;
+      font-weight: bold;
+      padding: 20px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     }
-    button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
+    .admin-button {
       margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #ffffff;
+      color: #7e0039;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
-    button:hover {
-      background-color: #0056b3;
+    .admin-button:hover {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <h1>Our Live Stream is Starting Soon!</h1>
-  <p>Thank you for joining us. The stream will begin shortly. Stay tuned!</p>
-
-  <!-- Countdown Timer -->
-  <div id="countdown" class="countdown-timer">00:00:00</div>
-
-  <!-- Button to update the timer -->
-  <button id="update-timer">Update Countdown</button>
+  <div class="live-stream-countdown">
+    <h1>Our Live Stream is Starting Soon!</h1>
+    <p>Thank you for joining us. The stream will begin shortly. Stay tuned!</p>
+    <div id="countdown">Loading...</div>
+    <button class="admin-button" onclick="accessAdmin()">Admin Settings</button>
+  </div>
 
   <script>
-    // Persistent Countdown Time using localStorage
-    const savedTime = localStorage.getItem('countdownTime');
-    let countdownTime = savedTime ? new Date(parseInt(savedTime, 10)) : new Date(Date.now() + 3600000); // Default: 1 hour from now
+    // Your Google Sheet CSV URL
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAQeowxkuesoxNXOSvkKq2CyQBqMkYpHprDNXZNw6hXhyYMK0ZXzyLu9zgwMn6B6vn0eozsaOUNy5G/pub?gid=0&single=true&output=csv";
 
-    // Save the initial countdown time if it's new
-    if (!savedTime) {
-      localStorage.setItem('countdownTime', countdownTime.getTime());
-    }
+    // Admin Google Sheet Edit URL (change to match your sheet ID)
+    const googleSheetEditUrl = "https://docs.google.com/spreadsheets/d/1vSAQeowxkuesoxNXOSvkKq2CyQBqMkYpHprDNXZNw6hXhyYMK0ZXzyLu9zgwMn6/edit";
 
-    // Function to update and display the countdown
-    function updateCountdown() {
-      const now = new Date();
-      const diff = countdownTime - now;
+    // Fetch the countdown date from the Google Sheet
+    async function fetchCountdownDate() {
+      try {
+        const response = await fetch(sheetUrl);
+        const data = await response.text();
 
-      if (diff <= 0) {
-        document.getElementById('countdown').textContent = "00:00:00";
-        clearInterval(timerInterval);
-        return;
+        const rows = data.split("\n").map(row => row.split(","));
+        const countdownDate = rows.find(row => row[0].trim() === "countdown_date")[1].trim();
+
+        startCountdown(countdownDate);
+      } catch (error) {
+        document.getElementById("countdown").innerText = "Error loading countdown.";
+        console.error("Failed to fetch countdown date:", error);
       }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
-
-      document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
     }
 
-    // Start the countdown interval
-    const timerInterval = setInterval(updateCountdown, 1000);
-    updateCountdown();
+    function startCountdown(dateString) {
+      const targetDate = new Date(dateString).getTime();
 
-    // Admin button to update the timer
-    document.getElementById('update-timer').addEventListener('click', () => {
-      const newTime = prompt('Enter the new countdown date and time (YYYY-MM-DD HH:MM:SS):');
-      if (newTime) {
-        const newDate = new Date(newTime);
-        if (!isNaN(newDate.getTime())) {
-          countdownTime = newDate;
-          localStorage.setItem('countdownTime', countdownTime.getTime());
-          alert('Countdown updated!');
-        } else {
-          alert('Invalid date format. Please try again.');
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const timeLeft = targetDate - now;
+
+        if (timeLeft <= 0) {
+          document.getElementById("countdown").innerText = "The countdown has ended!";
+          return;
         }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        document.getElementById("countdown").innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
       }
-    });
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+    }
+
+    // Admin button functionality
+    function accessAdmin() {
+      const passcode = prompt("Enter Admin Passcode:");
+      if (passcode === "2143") {
+        window.open(googleSheetEditUrl, "_blank");
+      } else {
+        alert("Incorrect Passcode!");
+      }
+    }
+
+    // Initialize countdown
+    fetchCountdownDate();
   </script>
 </body>
 </html>
