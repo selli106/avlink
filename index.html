@@ -96,9 +96,7 @@
 
 if (timeLeft <= 0) {
           document.getElementById("countdown").innerText = "The countdown has ended!";
-          
-          // Show the button after countdown ends
-          document.getElementById("redirect-button").style.display = "block";
+          document.getElementById("redirect-button").style.display = "block"; // Show the button
 
           // Open the stream link only once after a delay
           if (!hasOpenedLink) {
