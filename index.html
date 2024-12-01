@@ -1,140 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Stream Countdown</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background: linear-gradient(to bottom, #7e0039, #9b0056);
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100vh;
-    }
-    .live-stream-countdown {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 30px 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    }
-    h1 {
-      font-size: 3rem;
-      font-weight: bold;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    }
-    p {
-      font-size: 1.5rem;
-      margin-bottom: 30px;
-    }
-    #countdown {
-      font-size: 3rem;
-      font-weight: bold;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    }
-    .admin-button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      background: #ffffff;
-      color: #7e0039;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-    .admin-button:hover {
-      background: #f0f0f0;
-    }
-  </style>
-</head>
-<body>
-  <div class="live-stream-countdown">
-    <h1>Our Live Stream is Starting Soon!</h1>
-    <p>Thank you for joining us. The stream will begin shortly. Stay tuned!</p>
-    <div id="countdown">Loading...</div>
-    <button class="admin-button" onclick="accessAdmin()">Admin Settings</button>
-  </div>
+<script>
+  // Your Google Sheet CSV URL
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAQeowxkuesoxNXOSvkKq2CyQBqMkYpHprDNXZNw6hXhyYMK0ZXzyLu9zgwMn6B6vn0eozsaOUNy5G/pub?gid=0&single=true&output=csv";
+  const googleSheetEditUrl = "https://docs.google.com/spreadsheets/d/1Qj4NF2jjrG7wnpvYDqu6Dvi59GDaIO8pzr_DLWJif-8/edit?gid=0#gid=0";
 
-  <script>
-    // Your Google Sheet CSV URL
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAQeowxkuesoxNXOSvkKq2CyQBqMkYpHprDNXZNw6hXhyYMK0ZXzyLu9zgwMn6B6vn0eozsaOUNy5G/pub?gid=0&single=true&output=csv";
+  let hasOpenedLink = false; // Define the variable
 
-    // Admin Google Sheet Edit URL (change to match your sheet ID)
-    const googleSheetEditUrl = "https://docs.google.com/spreadsheets/d/1Qj4NF2jjrG7wnpvYDqu6Dvi59GDaIO8pzr_DLWJif-8/edit?gid=0#gid=0";
+  async function fetchCountdownDate() {
+    try {
+      const response = await fetch(sheetUrl);
+      const data = await response.text();
+      const rows = data.split("\n").map(row => row.split(","));
+      const countdownRow = rows.find(row => row[0].trim() === "countdown_date");
 
-    // Fetch the countdown date from the Google Sheet
-    async function fetchCountdownDate() {
-      try {
-        const response = await fetch(sheetUrl);
-        const data = await response.text();
-
-        const rows = data.split("\n").map(row => row.split(","));
-        const countdownDate = rows.find(row => row[0].trim() === "countdown_date")[1].trim();
-
-        startCountdown(countdownDate);
-      } catch (error) {
-        document.getElementById("countdown").innerText = "Error loading countdown.";
-        console.error("Failed to fetch countdown date:", error);
+      if (!countdownRow || countdownRow.length < 2) {
+        throw new Error("Countdown date not found.");
       }
+
+      const countdownDate = countdownRow[1].trim();
+      startCountdown(countdownDate);
+    } catch (error) {
+      document.getElementById("countdown").innerText = "Error loading countdown.";
+      console.error("Failed to fetch countdown date:", error);
     }
+  }
 
-    function startCountdown(dateString) {
-      const targetDate = new Date(dateString).getTime();
+  function startCountdown(dateString) {
+    const targetDate = new Date(dateString).getTime();
 
-      function updateCountdown() {
-        const now = new Date().getTime();
-        const timeLeft = targetDate - now;
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const timeLeft = targetDate - now;
 
-if (timeLeft <= 0) {
-          document.getElementById("countdown").innerText = "The countdown has ended!";
-          document.getElementById("redirect-button").style.display = "block"; // Show the button
+      if (timeLeft <= 0) {
+        document.getElementById("countdown").innerText = "The countdown has ended!";
+        document.getElementById("redirect-button").style.display = "block"; // Show the button
 
-          // Open the stream link only once after a delay
-          if (!hasOpenedLink) {
-            setTimeout(() => {
-              window.open("https://axs8.short.gy/CurrentStream", "_blank");
-              hasOpenedLink = true; // Set the flag to true after opening the link
-            }, 3000); // Delay for 3 seconds
-          }
-
-          return;
+        if (!hasOpenedLink) {
+          setTimeout(() => {
+            window.open("https://axs8.short.gy/CurrentStream", "_blank");
+            hasOpenedLink = true; // Set the flag to true after opening the link
+          }, 3000); // Delay for 3 seconds
         }
 
-
-
-        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-        document.getElementById("countdown").innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        return;
       }
 
-      setInterval(updateCountdown, 1000);
-      updateCountdown();
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    // Admin button functionality
-    function accessAdmin() {
-      const passcode = prompt("Enter Admin Passcode:");
-      if (passcode === "2143") {
-        window.open(googleSheetEditUrl, "_blank");
-      } else {
-        alert("Incorrect Passcode!");
-      }
-    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  }
 
-    // Initialize countdown
-    fetchCountdownDate();
-  </script>
-</body>
-</html>
+  function accessAdmin() {
+    const passcode = prompt("Enter Admin Passcode:");
+    if (passcode === "2143") {
+      window.open(googleSheetEditUrl, "_blank");
+    } else {
+      alert("Incorrect Passcode!");
+    }
+  }
+
+  // Initialize countdown
+  fetchCountdownDate();
+</script>
