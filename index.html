@@ -94,20 +94,22 @@
         const now = new Date().getTime();
         const timeLeft = targetDate - now;
 
-  if (timeLeft <= 0) {
+if (timeLeft <= 0) {
           document.getElementById("countdown").innerText = "The countdown has ended!";
           
           // Show the button after countdown ends
           document.getElementById("redirect-button").style.display = "block";
 
-          // Optionally open the stream in a new tab after a delay
-          setTimeout(() => {
-            window.open("https://axs8.short.gy/CurrentStream", "_blank");
-          }, 3000); // Delay for 3 seconds
+          // Open the stream link only once after a delay
+          if (!hasOpenedLink) {
+            setTimeout(() => {
+              window.open("https://axs8.short.gy/CurrentStream", "_blank");
+              hasOpenedLink = true; // Set the flag to true after opening the link
+            }, 3000); // Delay for 3 seconds
+          }
 
           return;
         }
-
 
 
 
