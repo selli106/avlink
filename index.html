@@ -76,7 +76,7 @@
       try {
         const response = await fetch(sheetUrl);
         const data = await response.text();
-
+        let hasOpenedLink = false; // Flag to track if the link has been opened
         const rows = data.split("\n").map(row => row.split(","));
         const countdownDate = rows.find(row => row[0].trim() === "countdown_date")[1].trim();
 
