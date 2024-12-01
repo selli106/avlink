@@ -72,6 +72,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       fetchCountdownDate(sheetUrl);
+      setInterval(() => {
+        fetchCountdownDate(sheetUrl); // Fetch the countdown date every minute
+      }, 60000); // 60000 milliseconds = 1 minute
     });
 
     async function fetchCountdownDate(sheetUrl) {
