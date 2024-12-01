@@ -94,11 +94,30 @@
         const now = new Date().getTime();
         const timeLeft = targetDate - now;
 
-   if (timeLeft <= 0) {
+if (timeLeft <= 0) {
+  // Update the countdown text
   document.getElementById("countdown").innerText = "The countdown has ended!";
-  <button onclick="window.location.href='https://axs8.short.gy/CurrentStream';">
-  Go to Stream
-</button>
+
+  // Create a button element
+  const button = document.createElement("button");
+  button.innerText = "Go to Stream";
+  button.onclick = () => {
+    window.location.href = "https://axs8.short.gy/CurrentStream";
+  };
+
+  // Style the button (optional)
+  button.style.marginTop = "20px";
+  button.style.padding = "10px 20px";
+  button.style.fontSize = "1rem";
+  button.style.backgroundColor = "#ffffff";
+  button.style.color = "#7e0039";
+  button.style.border = "none";
+  button.style.borderRadius = "5px";
+  button.style.cursor = "pointer";
+
+  // Insert the button into the DOM
+  const countdownContainer = document.getElementById("countdown").parentElement;
+  countdownContainer.appendChild(button);
 
   return;
 }
