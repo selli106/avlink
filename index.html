@@ -266,7 +266,7 @@
     </main>
 
     <footer class="py-6 text-center text-warmgrey text-sm relative z-10">
-        <p>© <span id="currentYear"></span> Live Stream Countdown. All rights reserved.</p>
+        <p>© <span id="currentYear"></span> Live Stream Countdown. All rights reserved. | <a href="recent-streams.html" class="text-teal hover:text-eucalypt transition duration-300">Recent Streams</a></p>
     </footer>
 
     <div id="adminModal" class="modal fixed inset-0 flex items-center justify-center p-4 z-50">
@@ -493,9 +493,9 @@
                  countdownDisplay.classList.remove('hidden'); // Make sure grid is visible
                  // Ensure individual elements are visible if the parent was hidden
                  if(daysElement) daysElement.parentElement.classList.remove('hidden');
-                 if(hoursElement) hoursElement.parentElement.classList.remove('hidden'); // Removed extra ')'
-                 if(minutesElement) minutesElement.parentElement.classList.remove('hidden'); // Removed extra ')'
-                 if(secondsElement) secondsElement.parentElement.classList.remove('hidden'); // Removed extra ')'
+                 if(hoursElement) hoursElement.parentElement.classList.remove('hidden');
+                 if(minutesElement) minutesElement.parentElement.classList.remove('hidden');
+                 if(secondsElement) secondsElement.parentElement.classList.remove('hidden');
 
                  streamReady.classList.add('hidden');
              }
