@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Streams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind CSS configuration for custom colors and fonts
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        magenta: '#7e0039',
+                        gold: '#f88d0d',
+                        grey: '#666666',
+                        charcoal: '#333333',
+                        teal: '#00a3a5',
+                        warmgrey: '#8a7b71',
+                        green: '#3d7061',
+                        orange: '#bb3900',
+                        eucalypt: '#909a8a',
+                        sandstone: '#ab8a5c'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], // Default sans-serif
+                        display: ['Orbitron', 'sans-serif'], // For titles
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+             /* Use the same animated background as the main page */
+            background: linear-gradient(135deg, #7e0039, #333333, #00a3a5); /* Initial gradient */
+            background-size: 400% 400%; /* Make gradient larger than viewport */
+            animation: gradientAnimation 60s ease infinite; /* Animate gradient */
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            padding-bottom: 80px; /* Add padding for footer */
+            position: relative; /* Needed for footer positioning */
+        }
+
+         @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Text glow effect */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(248, 141, 13, 0.7);
+        }
+
+         footer {
+             position: absolute;
+             bottom: 0;
+             width: 100%;
+         }
+    </style>
+</head>
+<body class="bg-charcoal text-white font-sans">
+
+    <main class="container mx-auto px-4 py-12 relative z-10"> <div class="mb-8">
+            <a href="index.html" class="inline-flex items-center text-teal hover:text-eucalypt transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Countdown
+            </a>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-display font-bold mb-10 text-center glow-text text-gold">Recent Streams</h1>
+
+        <p id="statusMessage" class="text-center text-warmgrey mb-8">Loading recent streams...</p>
+
+        <div id="recentStreamsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <footer class="py-6 text-center text-warmgrey text-sm relative z-10"> <p>© <span id="currentYear"></span> Live Stream Countdown. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // --- Configuration ---
+        // Your Google Sheet Published CSV URL
+        // (File > Share > Publish to web > Choose sheet & CSV > Publish)
+        const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSy-8e3C5trnUBXhMnpHxOmWEqB61875RPY0nCIIGCpw3UnU9SK31dt8iqqYzgeUziBkAWdo5qQ8wnd/pub?output=csv";
+
+        // --- DOM Elements ---
+        const recentStreamsList = document.getElementById('recentStreamsList');
+        const statusMessageElement = document.getElementById('statusMessage');
+        const currentYearElement = document.getElementById('currentYear');
+
+        // --- Functions ---
+
+        // Fetches data from the Google Sheet CSV and displays recent streams
+        async function fetchAndDisplayRecentStreams(csvUrl) {
+            try {
+                statusMessageElement.textContent = 'Loading recent streams...';
+                statusMessageElement.style.color = '#8a7b71'; // Warmgrey
+
+                const response = await fetch(csvUrl);
+                 if (!response.ok) {
+                     const errorBody = await response.text().catch(() => `Status: ${response.status}`);
+                     throw new Error(`HTTP error fetching sheet: ${response.status} - ${errorBody.substring(0, 100)}...`);
+                 }
+                const data = await response.text();
+                const rows = data.split("\n").map(row => row.split(",").map(cell => cell.trim())); // Split and trim
+
+                const recentStreams = [];
+                let currentStream = {};
+
+                // Parse rows to find recent stream data
+                for (const row of rows) {
+                    if (row.length >= 2) {
+                        const key = row[0];
+                        const value = row[1];
+
+                        if (key === "recent_stream_name") {
+                            // If we encounter a new stream name, push the previous one (if complete)
+                            if (currentStream.name && currentStream.description && currentStream.url) {
+                                recentStreams.push(currentStream);
+                            }
+                            // Start a new stream object
+                            currentStream = { name: value };
+                        } else if (key === "recent_stream_description" && currentStream.name) {
+                            currentStream.description = value;
+                        } else if (key === "recent_stream_url" && currentStream.name && currentStream.description) {
+                            currentStream.url = value;
+                            // If we have all three parts, push the complete stream
+                             recentStreams.push(currentStream);
+                             // Reset for the next potential stream
+                             currentStream = {};
+                        }
+                         // Ignore other keys like countdown_date or stream_url
+                    }
+                }
+                 // Handle the last stream if the file ends after recent_stream_url
+                 if (currentStream.name && currentStream.description && currentStream.url) {
+                     recentStreams.push(currentStream);
+                 }
+
+
+                displayRecentStreams(recentStreams);
+
+            } catch (error) {
+                statusMessageElement.textContent = 'Error loading recent streams.';
+                statusMessageElement.style.color = '#bb3900'; // Orange
+                console.error("Failed to fetch or parse recent streams from Google Sheet:", error);
+            }
+        }
+
+        // Displays the fetched recent streams on the page
+        function displayRecentStreams(streams) {
+            recentStreamsList.innerHTML = ''; // Clear loading message/previous content
+
+            if (streams.length === 0) {
+                statusMessageElement.textContent = 'No recent streams found.';
+                statusMessageElement.style.color = '#8a7b71'; // Warmgrey
+                return;
+            }
+
+            statusMessageElement.textContent = ''; // Clear status message if streams are found
+
+            streams.forEach(stream => {
+                const streamElement = document.createElement('div');
+                streamElement.className = 'bg-opacity-20 bg-teal backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-eucalypt border-opacity-30'; // Example Tailwind classes
+
+                streamElement.innerHTML = `
+                    <h3 class="text-xl font-bold mb-2 text-gold">${stream.name}</h3>
+                    <p class="text-warmgrey mb-4">${stream.description}</p>
+                    <a href="${stream.url}" target="_blank" class="inline-block bg-orange hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-full text-sm transition-all transform hover:scale-105">
+                        Watch Now
+                    </a>
+                `;
+
+                recentStreamsList.appendChild(streamElement);
+            });
+        }
+
+        // --- Initialization ---
+
+        // Set current year in footer
+        currentYearElement.textContent = new Date().getFullYear();
+
+        // Fetch and display recent streams on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndDisplayRecentStreams(sheetCsvUrl);
+        });
+
+    </script>
+</body>
+</html>
