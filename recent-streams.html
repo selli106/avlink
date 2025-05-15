@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Tailwind CSS configuration for custom colors and fonts
         tailwind.config = {
             theme: {
                 extend: {
@@ -24,8 +23,8 @@
                         sandstone: '#ab8a5c'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'], // Default sans-serif
-                        display: ['Orbitron', 'sans-serif'], // For titles
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
                     }
                 }
             }
@@ -33,36 +32,109 @@
     </script>
     <style>
         body {
-             /* Use the same animated background as the main page */
-            background: linear-gradient(135deg, #7e0039, #333333, #00a3a5); /* Initial gradient */
-            background-size: 400% 400%; /* Make gradient larger than viewport */
-            animation: gradientAnimation 60s ease infinite; /* Animate gradient */
-            min-height: 100vh; /* Ensure body takes at least full viewport height */
-            padding-bottom: 80px; /* Add padding for footer */
-            position: relative; /* Needed for footer positioning */
+            background: linear-gradient(135deg, #7e0039, #333333, #00a3a5);
+            background-size: 400% 400%;
+            animation: gradientAnimation 60s ease infinite;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            position: relative;
         }
-
-         @keyframes gradientAnimation {
+        
+        @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        /* Text glow effect */
+        
         .glow-text {
             text-shadow: 0 0 10px rgba(248, 141, 13, 0.7);
         }
-
-         footer {
-             position: absolute;
-             bottom: 0;
-             width: 100%;
-         }
+        
+        .modal {
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content {
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            overflow: hidden;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .stream-card:hover .thumbnail {
+            transform: scale(1.05);
+        }
+        
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(248, 141, 13, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .thumbnail-container:hover .play-icon {
+            opacity: 1;
+        }
+        
+        .play-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-charcoal text-white font-sans">
+    <button id="adminBtn" class="fixed top-4 right-4 bg-magenta hover:bg-opacity-80 text-white px-4 py-2 rounded-full shadow-lg z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+    </button>
 
-    <main class="container mx-auto px-4 py-12 relative z-10"> <div class="mb-8">
+    <main class="container mx-auto px-4 py-12 relative z-10">
+        <div class="mb-8">
             <a href="index.html" class="inline-flex items-center text-teal hover:text-eucalypt transition duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -76,99 +148,179 @@
         <p id="statusMessage" class="text-center text-warmgrey mb-8">Loading recent streams...</p>
 
         <div id="recentStreamsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
+            <!-- Stream cards will be inserted here -->
+        </div>
     </main>
 
-    <footer class="py-6 text-center text-warmgrey text-sm relative z-10"> <p>© <span id="currentYear"></span> Live Stream Countdown. All rights reserved.</p>
+    <footer class="py-6 text-center text-warmgrey text-sm relative z-10">
+        <p>© <span id="currentYear"></span> Live Stream Countdown. All rights reserved.</p>
     </footer>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal fixed inset-0 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
+        <div class="modal-content bg-charcoal rounded-xl max-w-md w-full p-6 border border-magenta border-opacity-50">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gold">Admin Settings</h3>
+                <button id="closeModal" class="text-grey hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="passwordSection">
+                <p class="mb-4 text-warmgrey">Enter admin password:</p>
+                <input type="password" id="adminPassword" class="w-full px-4 py-2 rounded bg-grey bg-opacity-20 border border-warmgrey focus:border-gold focus:outline-none mb-4" placeholder="Password">
+                <button id="submitPassword" class="w-full bg-teal hover:bg-opacity-80 text-white py-2 rounded">Submit</button>
+            </div>
+            
+            <div id="settingsSection" class="hidden">
+                <div class="mb-4">
+                    <label for="sheetUrl" class="block text-sm font-medium text-eucalypt mb-1">Google Sheet URL</label>
+                    <input type="url" id="sheetUrl" class="w-full px-4 py-2 rounded bg-grey bg-opacity-20 border border-warmgrey focus:border-gold focus:outline-none" placeholder="https://docs.google.com/spreadsheets/...">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="adminNewPassword" class="block text-sm font-medium text-eucalypt mb-1">Change Password (optional)</label>
+                    <input type="password" id="adminNewPassword" class="w-full px-4 py-2 rounded bg-grey bg-opacity-20 border border-warmgrey focus:border-gold focus:outline-none" placeholder="New password">
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button id="saveSettings" class="flex-1 bg-green hover:bg-opacity-80 text-white py-2 rounded">Save</button>
+                    <button id="cancelSettings" class="flex-1 bg-grey hover:bg-opacity-80 text-white py-2 rounded">Cancel</button>
+                </div>
+            </div>
+            
+            <div id="messageArea" class="mt-4 text-center text-sm"></div>
+        </div>
+    </div>
 
     <script>
         // --- Configuration ---
-        // Your Google Sheet Published CSV URL
-        // (File > Share > Publish to web > Choose sheet & CSV > Publish)
-        const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSy-8e3C5trnUBXhMnpHxOmWEqB61875RPY0nCIIGCpw3UnU9SK31dt8iqqYzgeUziBkAWdo5qQ8wnd/pub?output=csv";
+        let sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSy-8e3C5trnUBXhMnpHxOmWEqB61875RPY0nCIIGCpw3UnU9SK31dt8iqqYzgeUziBkAWdo5qQ8wnd/pub?output=csv";
 
         // --- DOM Elements ---
         const recentStreamsList = document.getElementById('recentStreamsList');
         const statusMessageElement = document.getElementById('statusMessage');
         const currentYearElement = document.getElementById('currentYear');
+        
+        // Admin elements
+        const adminBtn = document.getElementById('adminBtn');
+        const adminModal = document.getElementById('adminModal');
+        const closeModal = document.getElementById('closeModal');
+        const adminPassword = document.getElementById('adminPassword');
+        const submitPassword = document.getElementById('submitPassword');
+        const passwordSection = document.getElementById('passwordSection');
+        const settingsSection = document.getElementById('settingsSection');
+        const sheetUrl = document.getElementById('sheetUrl');
+        const adminNewPassword = document.getElementById('adminNewPassword');
+        const saveSettings = document.getElementById('saveSettings');
+        const cancelSettings = document.getElementById('cancelSettings');
+        const messageArea = document.getElementById('messageArea');
+
+        const correctPassword = "admin123";
+        
+        let savedSettings = JSON.parse(localStorage.getItem('streamSettings')) || {
+            sheetUrl: sheetCsvUrl,
+            password: correctPassword
+        };
 
         // --- Functions ---
 
-        // Fetches data from the Google Sheet CSV and displays recent streams
         async function fetchAndDisplayRecentStreams(csvUrl) {
             try {
                 statusMessageElement.textContent = 'Loading recent streams...';
-                statusMessageElement.style.color = '#8a7b71'; // Warmgrey
+                statusMessageElement.style.color = '#8a7b71';
 
                 const response = await fetch(csvUrl);
-                 if (!response.ok) {
-                     const errorBody = await response.text().catch(() => `Status: ${response.status}`);
-                     throw new Error(`HTTP error fetching sheet: ${response.status} - ${errorBody.substring(0, 100)}...`);
-                 }
+
+                if (!response.ok) {
+                    const errorBody = await response.text().catch(() => `Status: ${response.status}`);
+                    throw new Error(`HTTP error fetching sheet: ${response.status} - ${errorBody.substring(0, 100)}...`);
+                }
+                
                 const data = await response.text();
-                const rows = data.split("\n").map(row => row.split(",").map(cell => cell.trim())); // Split and trim
+                const rows = data.split("\n").map(row => row.split(",").map(cell => cell.trim()));
 
                 const recentStreams = [];
                 let currentStream = {};
 
-                // Parse rows to find recent stream data
                 for (const row of rows) {
                     if (row.length >= 2) {
                         const key = row[0];
                         const value = row[1];
 
                         if (key === "recent_stream_name") {
-                            // If we encounter a new stream name, push the previous one (if complete)
                             if (currentStream.name && currentStream.description && currentStream.url) {
                                 recentStreams.push(currentStream);
                             }
-                            // Start a new stream object
                             currentStream = { name: value };
                         } else if (key === "recent_stream_description" && currentStream.name) {
                             currentStream.description = value;
                         } else if (key === "recent_stream_url" && currentStream.name && currentStream.description) {
                             currentStream.url = value;
-                            // If we have all three parts, push the complete stream
-                             recentStreams.push(currentStream);
-                             // Reset for the next potential stream
-                             currentStream = {};
+                            // Extract video ID for thumbnail if YouTube URL
+                            if (value.includes('youtube.com') || value.includes('youtu.be')) {
+                                const videoId = extractYouTubeId(value);
+                                if (videoId) {
+                                    currentStream.thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                                }
+                            }
+                            recentStreams.push(currentStream);
+                            currentStream = {};
+                        } else if (key === "recent_stream_thumbnail" && currentStream.name) {
+                            currentStream.thumbnail = value;
                         }
-                         // Ignore other keys like countdown_date or stream_url
                     }
                 }
-                 // Handle the last stream if the file ends after recent_stream_url
-                 if (currentStream.name && currentStream.description && currentStream.url) {
-                     recentStreams.push(currentStream);
-                 }
 
+                if (currentStream.name && currentStream.description && currentStream.url) {
+                    recentStreams.push(currentStream);
+                }
 
                 displayRecentStreams(recentStreams);
 
             } catch (error) {
                 statusMessageElement.textContent = 'Error loading recent streams.';
-                statusMessageElement.style.color = '#bb3900'; // Orange
+                statusMessageElement.style.color = '#bb3900';
                 console.error("Failed to fetch or parse recent streams from Google Sheet:", error);
             }
         }
 
-        // Displays the fetched recent streams on the page
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
         function displayRecentStreams(streams) {
-            recentStreamsList.innerHTML = ''; // Clear loading message/previous content
+            recentStreamsList.innerHTML = '';
 
             if (streams.length === 0) {
                 statusMessageElement.textContent = 'No recent streams found.';
-                statusMessageElement.style.color = '#8a7b71'; // Warmgrey
+                statusMessageElement.style.color = '#8a7b71';
                 return;
             }
 
-            statusMessageElement.textContent = ''; // Clear status message if streams are found
+            statusMessageElement.textContent = '';
 
             streams.forEach(stream => {
                 const streamElement = document.createElement('div');
-                streamElement.className = 'bg-opacity-20 bg-teal backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-eucalypt border-opacity-30'; // Example Tailwind classes
+                streamElement.className = 'stream-card bg-opacity-20 bg-teal backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-eucalypt border-opacity-30 hover:border-gold transition-all duration-300 hover:shadow-lg';
 
+                // Default thumbnail if none provided
+                const thumbnailUrl = stream.thumbnail || 'https://via.placeholder.com/1280x720/333333/7e0039?text=Stream+Thumbnail';
+                
                 streamElement.innerHTML = `
+                    <div class="thumbnail-container">
+                        <img src="${thumbnailUrl}" alt="${stream.name}" class="thumbnail" onerror="this.src='https://via.placeholder.com/1280x720/333333/7e0039?text=Thumbnail+Missing'">
+                        <div class="play-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
                     <h3 class="text-xl font-bold mb-2 text-gold">${stream.name}</h3>
                     <p class="text-warmgrey mb-4">${stream.description}</p>
                     <a href="${stream.url}" target="_blank" class="inline-block bg-orange hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-full text-sm transition-all transform hover:scale-105">
@@ -180,16 +332,90 @@
             });
         }
 
-        // --- Initialization ---
+        function showMessage(message, colorClass) {
+            messageArea.textContent = message;
+            messageArea.className = `mt-4 text-center text-sm ${colorClass}`;
+        }
 
-        // Set current year in footer
-        currentYearElement.textContent = new Date().getFullYear();
+        function resetModal() {
+            passwordSection.classList.remove('hidden');
+            settingsSection.classList.add('hidden');
+            adminPassword.value = '';
+            adminNewPassword.value = '';
+            messageArea.textContent = '';
+        }
 
-        // Fetch and display recent streams on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAndDisplayRecentStreams(sheetCsvUrl);
+        // --- Event Listeners ---
+
+        adminBtn.addEventListener('click', () => {
+            adminModal.classList.add('active');
+            adminPassword.focus();
         });
 
+        closeModal.addEventListener('click', () => {
+            adminModal.classList.remove('active');
+            resetModal();
+        });
+
+        submitPassword.addEventListener('click', () => {
+            if (adminPassword.value === savedSettings.password) {
+                passwordSection.classList.add('hidden');
+                settingsSection.classList.remove('hidden');
+                sheetUrl.value = savedSettings.sheetUrl;
+                messageArea.textContent = '';
+            } else {
+                showMessage('Incorrect password', 'text-orange');
+            }
+        });
+
+        saveSettings.addEventListener('click', () => {
+            if (!sheetUrl.value) {
+                showMessage('Please enter a valid Google Sheet URL', 'text-orange');
+                return;
+            }
+
+            savedSettings.sheetUrl = sheetUrl.value;
+            if (adminNewPassword.value) {
+                savedSettings.password = adminNewPassword.value;
+            }
+
+            localStorage.setItem('streamSettings', JSON.stringify(savedSettings));
+
+            showMessage('Settings saved successfully!', 'text-green');
+
+            fetchAndDisplayRecentStreams(savedSettings.sheetUrl);
+
+            setTimeout(() => {
+                adminModal.classList.remove('active');
+                resetModal();
+            }, 2000);
+        });
+
+        cancelSettings.addEventListener('click', () => {
+            adminModal.classList.remove('active');
+            resetModal();
+        });
+
+        adminModal.addEventListener('click', (e) => {
+            if (e.target === adminModal) {
+                adminModal.classList.remove('active');
+                resetModal();
+            }
+        });
+
+        adminPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitPassword.click();
+            }
+        });
+
+        // --- Initialization ---
+
+        currentYearElement.textContent = new Date().getFullYear();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndDisplayRecentStreams(savedSettings.sheetUrl);
+        });
     </script>
 </body>
 </html>
