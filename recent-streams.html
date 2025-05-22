@@ -233,7 +233,7 @@
                             const youtubeId = extractYouTubeId(value);
                             if (youtubeId) {
                                 // Use a reliable YouTube thumbnail URL format
-                                currentStream.thumbnail = `http://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+                                currentStream.thumbnail = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
                             }
                             // If we have all three parts (name, description, url), push the complete stream
                              if (currentStream.name && currentStream.description && currentStream.url) {
@@ -299,8 +299,12 @@
                 streamElement.innerHTML = `
                     <a href="${stream.url}" target="_blank" class="block">
                         <div class="thumbnail-container">
-                            <img src="${thumbnailUrl}" alt="${stream.name}" class="thumbnail" 
-                                 onerror="this.src='https://raw.githubusercontent.com/selli106/avlink/main/The%20Hutchins%20School%20Holding%20slide.jpg'">
+                            <img 
+  src="${thumbnailUrl}" 
+  alt="${stream.name}" 
+  class="thumbnail" 
+  onerror="if(this.src.indexOf('hqdefault.jpg') !== -1) { this.src='https://raw.githubusercontent.com/selli106/avlink/main/The%20Hutchins%20School%20Holding%20slide.jpg'; } else { this.src='https://placehold.co/1280x720/333333/7e0039?text=Stream+Thumbnail'; }" 
+/>
                             <div class="play-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
