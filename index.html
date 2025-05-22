@@ -364,11 +364,11 @@
                 errorDisplay.textContent = '';
 
                 const response = await fetch(csvUrl);
-                   if (!response.ok) {
-                       // Attempt to read body for more specific error if possible, otherwise use status
-                       const errorBody = await response.text().catch(() => `Status: ${response.status}`);
-                       throw new Error(`HTTP error fetching sheet: ${response.status} - ${errorBody.substring(0, 100)}...`); // Limit error body length
-                   }
+                if (!response.ok) {
+                    // Attempt to read body for more specific error if possible, otherwise use status
+                    const errorBody = await response.text().catch(() => `Status: ${response.status}`);
+                    throw new Error(`HTTP error fetching sheet: ${response.status} - ${errorBody.substring(0, 100)}...`); // Limit error body length
+                }
                 const data = await response.text();
                 const rows = data.split("\n").map(row => row.split(",").map(cell => cell.trim())); // Split rows and cells, trim whitespace
 
@@ -390,16 +390,16 @@
 
                 if (dateString && urlString) {
                     // Only update if both values are found and are different from current settings
-                       if (dateString !== currentCountdownDateString || urlString !== currentStreamTargetUrl) {
-                           currentCountdownDateString = dateString;
-                           currentStreamTargetUrl = urlString;
-                           console.log("Settings fetched successfully:", { date: currentCountdownDateString, url: currentStreamTargetUrl });
-                           // Restart countdown with new settings
-                           startCountdown(currentCountdownDateString, currentStreamTargetUrl);
-                       } else {
-                           console.log("Settings fetched, no changes detected.");
-                           // Continue the existing countdown if no changes
-                       }
+                    if (dateString !== currentCountdownDateString || urlString !== currentStreamTargetUrl) {
+                        currentCountdownDateString = dateString;
+                        currentStreamTargetUrl = urlString;
+                        console.log("Settings fetched successfully:", { date: currentCountdownDateString, url: currentStreamTargetUrl });
+                        // Restart countdown with new settings
+                        startCountdown(currentCountdownDateString, currentStreamTargetUrl);
+                    } else {
+                        console.log("Settings fetched, no changes detected.");
+                        // Continue the existing countdown if no changes
+                    }
 
                 } else {
                     errorDisplay.textContent = 'Error: Settings (countdown_date or stream_url) not found in Google Sheet.';
@@ -415,12 +415,12 @@
             } catch (error) {
                 errorDisplay.textContent = 'Error fetching settings. Check sheet URL and publish status.';
                 console.error("Failed to fetch settings from Google Sheet:", error);
-                   // Indicate error to user and stop countdown on fetch error
-                   countdownDisplay.textContent = "Error fetching settings.";
-                   clearInterval(countdownInterval);
-                   streamReady.classList.add('hidden');
-                   preStreamMessageElement.classList.add('hidden'); // Hide pre-stream message
-                   progressBar.style.width = '0%'; // Reset progress bar
+                // Indicate error to user and stop countdown on fetch error
+                countdownDisplay.textContent = "Error fetching settings.";
+                clearInterval(countdownInterval);
+                streamReady.classList.add('hidden');
+                preStreamMessageElement.classList.add('hidden'); // Hide pre-stream message
+                progressBar.style.width = '0%'; // Reset progress bar
             }
         }
 
@@ -441,16 +441,16 @@
 
             // Check if the parsed date is valid
             if (isNaN(targetTimestamp)) {
-                   errorDisplay.textContent = `Error: Invalid date format from sheet: ${dateString}`;
-                   console.error("Invalid date string received from Google Sheet:", dateString);
-                   countdownDisplay.textContent = "Error loading settings.";
-                   clearInterval(countdownInterval);
-                   streamReady.classList.add('hidden');
-                   preStreamMessageElement.classList.add('hidden'); // Hide pre-stream message
-                   progressBar.style.width = '0%'; // Reset progress bar
-                   streamTimeDisplay.textContent = "Invalid Date";
-                   timezoneDisplay.textContent = "";
-                   return; // Stop execution if date is invalid
+                errorDisplay.textContent = `Error: Invalid date format from sheet: ${dateString}`;
+                console.error("Invalid date string received from Google Sheet:", dateString);
+                countdownDisplay.textContent = "Error loading settings.";
+                clearInterval(countdownInterval);
+                streamReady.classList.add('hidden');
+                preStreamMessageElement.classList.add('hidden'); // Hide pre-stream message
+                progressBar.style.width = '0%'; // Reset progress bar
+                streamTimeDisplay.textContent = "Invalid Date";
+                timezoneDisplay.textContent = "";
+                return; // Stop execution if date is invalid
             }
 
             // Calculate the initial duration for the progress bar
@@ -472,38 +472,38 @@
 
             // Update the display below the countdown with the target time
             const options = {
-                   weekday: 'long',
-                   year: 'numeric',
-                   month: 'long',
-                   day: 'numeric',
-                   hour: '2-digit',
-                   minute: '2-digit',
-                   timeZoneName: 'short' // Show the user's local timezone abbreviation
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short' // Show the user's local timezone abbreviation
             };
             // Use the Date object created from the string for consistent display
             // Note: This displays the target moment converted to the *user's* local time zone.
             try {
-                   streamTimeDisplay.textContent = targetDate.toLocaleString(undefined, options); // Use the parsed Date object
-                   timezoneDisplay.textContent = "(Your Local Time)"; // Indicate this is local time
+                streamTimeDisplay.textContent = targetDate.toLocaleString(undefined, options); // Use the parsed Date object
+                timezoneDisplay.textContent = "(Your Local Time)"; // Indicate this is local time
             } catch (e) {
-                   // Handle potential invalid date string parsing errors (less likely now with isNaN check)
-                   streamTimeDisplay.textContent = `Error formatting date: ${dateString}`;
-                   timezoneDisplay.textContent = "";
-                   console.error("Error formatting date string:", dateString, e);
+                // Handle potential invalid date string parsing errors (less likely now with isNaN check)
+                streamTimeDisplay.textContent = `Error formatting date: ${dateString}`;
+                timezoneDisplay.textContent = "";
+                console.error("Error formatting date string:", dateString, e);
             }
 
 
-             // Ensure the countdown display is visible if the date is in the future
-             if (targetTimestamp > new Date().getTime()) {
-                 countdownDisplay.classList.remove('hidden'); // Make sure grid is visible
-                 // Ensure individual elements are visible if the parent was hidden
-                 if(daysElement) daysElement.parentElement.classList.remove('hidden');
-                 if(hoursElement) hoursElement.parentElement.classList.remove('hidden');
-                 if(minutesElement) minutesElement.parentElement.classList.remove('hidden');
-                 if(secondsElement) secondsElement.parentElement.classList.remove('hidden');
+            // Ensure the countdown display is visible if the date is in the future
+            if (targetTimestamp > new Date().getTime()) {
+                countdownDisplay.classList.remove('hidden'); // Make sure grid is visible
+                // Ensure individual elements are visible if the parent was hidden
+                if(daysElement) daysElement.parentElement.classList.remove('hidden');
+                if(hoursElement) hoursElement.parentElement.classList.remove('hidden');
+                if(minutesElement) minutesElement.parentElement.classList.remove('hidden');
+                if(secondsElement) secondsElement.parentElement.classList.remove('hidden');
 
-                 streamReady.classList.add('hidden');
-             }
+                streamReady.classList.add('hidden');
+            }
         }
 
 
@@ -515,7 +515,7 @@
             // --- Progress Bar Update ---
             let progressPercentage = 100; // Start full
             if (initialCountdownDuration > 0) {
-                   progressPercentage = Math.max(0, (distance / initialCountdownDuration) * 100);
+                progressPercentage = Math.max(0, (distance / initialCountdownDuration) * 100);
             }
             progressBar.style.width = `${progressPercentage}%`;
 
@@ -529,11 +529,11 @@
 
                 // Ensure stream link is correctly set one last time
                 streamLink.href = streamTargetUrl;
-                   streamLink.target = "_blank"; // Ensure it opens in a new tab
+                streamLink.target = "_blank"; // Ensure it opens in a new tab
 
                 streamTimeDisplay.textContent = "Stream should be live now!";
                 timezoneDisplay.textContent = ""; // Clear timezone note
-                   errorDisplay.textContent = ""; // Clear any lingering error messages
+                errorDisplay.textContent = ""; // Clear any lingering error messages
 
                 // Play sound effect (if loaded and allowed by browser)
                 if (countdownEndSound) {
@@ -564,18 +564,18 @@
             // Update display elements, using ?.textContent for safety just in case
             // Add a temporary class to trigger animation
             const updateDigit = (element, value) => {
-                   const stringValue = value.toString().padStart(2, '0');
-                   if (element && element.textContent !== stringValue) {
-                       element.textContent = stringValue;
-                       // Trigger animation class
-                       element.classList.add('animate-scale');
-                       // Remove class after animation duration
-                       setTimeout(() => {
-                           element.classList.remove('animate-scale');
-                       }, 300); // Match CSS transition duration
-                   } else if (element) {
-                       element.textContent = stringValue; // Update even if value is same, just in case
-                   }
+                const stringValue = value.toString().padStart(2, '0');
+                if (element && element.textContent !== stringValue) {
+                    element.textContent = stringValue;
+                    // Trigger animation class
+                    element.classList.add('animate-scale');
+                    // Remove class after animation duration
+                    setTimeout(() => {
+                        element.classList.remove('animate-scale');
+                    }, 300); // Match CSS transition duration
+                } else if (element) {
+                    element.textContent = stringValue; // Update even if value is same, just in case
+                }
             };
 
             updateDigit(daysElement, days);
@@ -584,14 +584,14 @@
             updateDigit(secondsElement, seconds);
 
 
-             // Ensure countdown elements are visible if they were hidden after countdown ended previously
-             countdownDisplay.classList.remove('hidden');
-             streamReady.classList.add('hidden');
-             // Also make sure the individual number divs are not hidden if you added display:none to them
-             if(daysElement && daysElement.parentElement.classList.contains('hidden')) daysElement.parentElement.classList.remove('hidden');
-             if(hoursElement && hoursElement.parentElement.classList.contains('hidden')) hoursElement.parentElement.classList.remove('hidden');
-             if(minutesElement && minutesElement.parentElement.classList.contains('hidden')) minutesElement.parentElement.classList.remove('hidden');
-             if(secondsElement && secondsElement.parentElement.classList.contains('hidden')) secondsElement.parentElement.classList.remove('hidden');
+            // Ensure countdown elements are visible if they were hidden after countdown ended previously
+            countdownDisplay.classList.remove('hidden');
+            streamReady.classList.add('hidden');
+            // Also make sure the individual number divs are not hidden if you added display:none to them
+            if(daysElement && daysElement.parentElement.classList.contains('hidden')) daysElement.parentElement.classList.remove('hidden');
+            if(hoursElement && hoursElement.parentElement.classList.contains('hidden')) hoursElement.parentElement.classList.remove('hidden');
+            if(minutesElement && minutesElement.parentElement.classList.contains('hidden')) minutesElement.parentElement.classList.remove('hidden');
+            if(secondsElement && secondsElement.parentElement.classList.contains('hidden')) secondsElement.parentElement.classList.remove('hidden');
 
         }
 
@@ -637,7 +637,56 @@
             });
 
             // Schedule the next animation cycle
-            // Use a timeout slightly longer
+            // Use a timeout slightly longer than the longest animation duration to ensure smooth, continuous movement
+            setTimeout(animateParticles, (15 + 15) * 1000 + 100); // Max duration (30s) + a small buffer
+        }
+
+
+        // --- Event Listeners and Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            currentYear.textContent = new Date().getFullYear();
+
+            // Set the Google Sheet edit URL in the modal
+            if (editSheetLink) {
+                editSheetLink.href = googleSheetEditUrl;
+            }
+
+            // Admin button click handler
+            adminBtn.addEventListener('click', () => {
+                adminModal.classList.add('active');
+                messageArea.textContent = 'Fetching latest settings...';
+                fetchSettings(sheetCsvUrl).then(() => {
+                    messageArea.textContent = 'Settings updated or no changes detected.';
+                }).catch(() => {
+                    messageArea.textContent = 'Failed to fetch settings.';
+                });
+            });
+
+            // Close modal handler
+            closeModal.addEventListener('click', () => {
+                adminModal.classList.remove('active');
+            });
+
+            // Close modal if clicking outside content
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) {
+                    adminModal.classList.remove('active');
+                }
+            });
+
+            // Add ripple effect to countdown digits
+            countdownDigits.forEach(digit => {
+                digit.addEventListener('click', createRipple);
+            });
+
+            // Initial fetch and start countdown
+            fetchSettings(sheetCsvUrl);
+            // Fetch settings regularly
+            setInterval(() => fetchSettings(sheetCsvUrl), fetchInterval);
+
+            // Start particle animation
+            animateParticles();
+        });
     </script>
 </body>
 </html>
