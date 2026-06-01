@@ -266,7 +266,7 @@
         function extractYouTubeId(url) {
             if (!url) return null;
             // Updated regex to handle more YouTube URL variations
-            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:live\/|shorts\/|watch\?.*?[?&]?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
             const match = url.match(regExp);
             return match ? match[1] : null; // Return the video ID if found
         }

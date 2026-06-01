@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandparents Day Countdowns</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        magenta: '#7e0039',
+                        gold: '#f88d0d',
+                        grey: '#666666',
+                        charcoal: '#333333',
+                        teal: '#00a3a5',
+                        warmgrey: '#8a7b71',
+                        green: '#3d7061',
+                        orange: '#bb3900',
+                        eucalypt: '#909a8a',
+                        sandstone: '#ab8a5c'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #7e0039, #333333, #00a3a5);
+            background-size: 400% 400%;
+            animation: gradientAnimation 60s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(248, 141, 13, 0.7);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background-color: #444;
+            border: 1px solid rgba(144, 154, 138, 0.5);
+        }
+
+        .thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .countdown-cell {
+            background: rgba(51, 51, 51, 0.75);
+            border: 1px solid rgba(248, 141, 13, 0.3);
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body class="text-white font-sans">
+    <main class="container mx-auto px-4 py-10">
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-center text-gold glow-text mb-8">Grandparents Day Livestreams</h1>
+        <p class="text-center text-warmgrey mb-10">Each stream will prompt you to join only when its countdown reaches zero.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <section id="stream-elc" class="bg-opacity-20 bg-magenta backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-teal border-opacity-30">
+                <h2 class="text-2xl font-display text-gold mb-2 min-h-[4rem]">ELC Grandparents Day</h2>
+                <p class="text-warmgrey mb-4">Wednesday 3 June, 9:30-10:30am</p>
+
+                <a href="https://youtube.com/live/p0SvwKWDoho?feature=share" target="_blank" rel="noopener noreferrer" class="block mb-5" aria-label="Open ELC Grandparents Day stream">
+                    <div class="thumbnail-container">
+                        <img id="thumb-elc" class="thumbnail" alt="ELC Grandparents Day thumbnail">
+                    </div>
+                </a>
+
+                <div id="countdown-elc" class="countdown-grid mb-4"></div>
+                <p id="local-elc" class="text-sm text-eucalypt mb-4"></p>
+
+                <a id="join-elc" href="https://youtube.com/live/p0SvwKWDoho?feature=share" target="_blank" class="hidden inline-block bg-orange hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105">
+                    Join ELC Stream
+                </a>
+            </section>
+
+            <section id="stream-js" class="bg-opacity-20 bg-magenta backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-teal border-opacity-30">
+                <h2 class="text-2xl font-display text-gold mb-2 min-h-[4rem]">Junior School Grandparents Day</h2>
+                <p class="text-warmgrey mb-4">Thursday 4 June, 9:30-10:30am</p>
+
+                <a href="https://youtube.com/live/qLtD-kYoC9M?feature=share" target="_blank" rel="noopener noreferrer" class="block mb-5" aria-label="Open Junior School Grandparents Day stream">
+                    <div class="thumbnail-container">
+                        <img id="thumb-js" class="thumbnail" alt="Junior School Grandparents Day thumbnail">
+                    </div>
+                </a>
+
+                <div id="countdown-js" class="countdown-grid mb-4"></div>
+                <p id="local-js" class="text-sm text-eucalypt mb-4"></p>
+
+                <a id="join-js" href="https://youtube.com/live/qLtD-kYoC9M?feature=share" target="_blank" class="hidden inline-block bg-orange hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105">
+                    Join Junior School Stream
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-6 text-center text-warmgrey text-sm">
+        <p>&copy; <span id="currentYear"></span> Live Stream Countdown. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const fallbackThumb = 'https://placehold.co/1280x720/333333/7e0039?text=Stream+Thumbnail';
+
+        const streams = [
+            {
+                key: 'elc',
+                url: 'https://youtube.com/live/p0SvwKWDoho?feature=share',
+                start: '2026-06-03T09:30:00+10:00',
+                countdownEl: document.getElementById('countdown-elc'),
+                thumbEl: document.getElementById('thumb-elc'),
+                localEl: document.getElementById('local-elc'),
+                joinEl: document.getElementById('join-elc'),
+                prompted: false
+            },
+            {
+                key: 'js',
+                url: 'https://youtube.com/live/qLtD-kYoC9M?feature=share',
+                start: '2026-06-04T09:30:00+10:00',
+                countdownEl: document.getElementById('countdown-js'),
+                thumbEl: document.getElementById('thumb-js'),
+                localEl: document.getElementById('local-js'),
+                joinEl: document.getElementById('join-js'),
+                prompted: false
+            }
+        ];
+
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:live\/|shorts\/|watch\?.*?[?&]?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
+        function buildThumb(url) {
+            const id = extractYouTubeId(url);
+            if (!id) return fallbackThumb;
+            return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+        }
+
+        function renderCountdownElement(container, days, hours, minutes, seconds) {
+            container.innerHTML = `
+                <div class="countdown-cell"><div class="text-3xl font-display text-gold">${String(days).padStart(2, '0')}</div><div class="text-xs text-sandstone uppercase">Days</div></div>
+                <div class="countdown-cell"><div class="text-3xl font-display text-gold">${String(hours).padStart(2, '0')}</div><div class="text-xs text-sandstone uppercase">Hours</div></div>
+                <div class="countdown-cell"><div class="text-3xl font-display text-gold">${String(minutes).padStart(2, '0')}</div><div class="text-xs text-sandstone uppercase">Minutes</div></div>
+                <div class="countdown-cell"><div class="text-3xl font-display text-gold">${String(seconds).padStart(2, '0')}</div><div class="text-xs text-sandstone uppercase">Seconds</div></div>
+            `;
+        }
+
+        function updateStream(stream) {
+            const now = Date.now();
+            const target = new Date(stream.start).getTime();
+            const distance = target - now;
+
+            if (distance <= 0) {
+                renderCountdownElement(stream.countdownEl, 0, 0, 0, 0);
+                stream.joinEl.classList.remove('hidden');
+
+                if (!stream.prompted) {
+                    stream.prompted = true;
+                    const shouldOpen = confirm('The stream is now live. Open it now?');
+                    if (shouldOpen) {
+                        window.open(stream.url, '_blank');
+                    }
+                }
+                return;
+            }
+
+            stream.joinEl.classList.add('hidden');
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            renderCountdownElement(stream.countdownEl, days, hours, minutes, seconds);
+        }
+
+        function init() {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            streams.forEach((stream) => {
+                stream.thumbEl.src = buildThumb(stream.url);
+                stream.thumbEl.onerror = function () {
+                    this.src = fallbackThumb;
+                };
+
+                const prettyLocal = new Date(stream.start).toLocaleString(undefined, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                });
+                stream.localEl.textContent = `Local time: ${prettyLocal}`;
+                updateStream(stream);
+            });
+
+            setInterval(() => {
+                streams.forEach(updateStream);
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
