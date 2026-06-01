@@ -100,7 +100,7 @@
 
                 <a href="https://youtube.com/live/p0SvwKWDoho?feature=share" target="_blank" rel="noopener noreferrer" class="block mb-5" aria-label="Open ELC Grandparents Day stream">
                     <div class="thumbnail-container">
-                        <img id="thumb-elc" class="thumbnail" alt="ELC Grandparents Day thumbnail">
+                        <img id="thumb-elc" class="thumbnail" alt="ELC Grandparents Day thumbnail" onerror="this.src='https://img.youtube.com/vi/p0SvwKWDoho/sddefault.jpg'; this.onerror=function(){this.src='https://img.youtube.com/vi/p0SvwKWDoho/hqdefault.jpg'; this.onerror=function(){this.src='https://placehold.co/1280x720/333333/7e0039?text=Stream+Thumbnail';};};">
                     </div>
                 </a>
 
@@ -118,7 +118,7 @@
 
                 <a href="https://youtube.com/live/qLtD-kYoC9M?feature=share" target="_blank" rel="noopener noreferrer" class="block mb-5" aria-label="Open Junior School Grandparents Day stream">
                     <div class="thumbnail-container">
-                        <img id="thumb-js" class="thumbnail" alt="Junior School Grandparents Day thumbnail">
+                        <img id="thumb-js" class="thumbnail" alt="Junior School Grandparents Day thumbnail" onerror="this.src='https://img.youtube.com/vi/qLtD-kYoC9M/sddefault.jpg'; this.onerror=function(){this.src='https://img.youtube.com/vi/qLtD-kYoC9M/hqdefault.jpg'; this.onerror=function(){this.src='https://placehold.co/1280x720/333333/7e0039?text=Stream+Thumbnail';};};">
                     </div>
                 </a>
 
@@ -172,7 +172,7 @@
         function buildThumb(url) {
             const id = extractYouTubeId(url);
             if (!id) return fallbackThumb;
-            return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+            return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
         }
 
         function renderCountdownElement(container, days, hours, minutes, seconds) {
