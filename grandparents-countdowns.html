@@ -143,6 +143,7 @@
                 key: 'elc',
                 url: 'https://youtube.com/live/p0SvwKWDoho?feature=share',
                 start: '2026-06-03T09:30:00+10:00',
+                redirectOnLive: false,
                 countdownEl: document.getElementById('countdown-elc'),
                 thumbEl: document.getElementById('thumb-elc'),
                 localEl: document.getElementById('local-elc'),
@@ -153,6 +154,7 @@
                 key: 'js',
                 url: 'https://youtube.com/live/qLtD-kYoC9M?feature=share',
                 start: '2026-06-04T09:30:00+10:00',
+                redirectOnLive: true,
                 countdownEl: document.getElementById('countdown-js'),
                 thumbEl: document.getElementById('thumb-js'),
                 localEl: document.getElementById('local-js'),
@@ -192,11 +194,11 @@
                 renderCountdownElement(stream.countdownEl, 0, 0, 0, 0);
                 stream.joinEl.classList.remove('hidden');
 
-                if (!stream.prompted) {
+                if (stream.redirectOnLive && !stream.prompted) {
                     stream.prompted = true;
-                    const shouldOpen = confirm('The stream is now live. Open it now?');
-                    if (shouldOpen) {
-                        window.open(stream.url, '_blank');
+                    const shouldRedirect = confirm('Junior School stream is now live. Open it now?');
+                    if (shouldRedirect) {
+                        window.location.href = stream.url;
                     }
                 }
                 return;
