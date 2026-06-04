@@ -194,13 +194,7 @@
                 renderCountdownElement(stream.countdownEl, 0, 0, 0, 0);
                 stream.joinEl.classList.remove('hidden');
 
-                if (stream.redirectOnLive && !stream.prompted) {
-                    stream.prompted = true;
-                    const shouldRedirect = confirm('Junior School stream is now live. Open it now?');
-                    if (shouldRedirect) {
-                        window.location.href = stream.url;
-                    }
-                }
+
                 return;
             }
 
